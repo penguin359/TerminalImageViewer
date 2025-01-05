@@ -1,0 +1,32 @@
+name: TerminalImageViewer CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Install dependencies
+      run: sudo apt-get install -qy imagemagick
+    - name: Build
+      run: make -C src
+    - name: Test
+      run: ./src/tiv -w 80 -h 24 /usr/share/pixmaps/debian-logo.png
+    - name: Good Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: good
+        path: "*.rb"
+    - name: Bad Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ".."
+        path: src/tiv.cpp
